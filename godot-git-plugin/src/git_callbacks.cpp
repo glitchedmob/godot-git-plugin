@@ -88,6 +88,13 @@ extern "C" int credentials_cb(git_cred **out, const char *url, const char *usern
 		}
 	}
 
+	if (creds->ssh_public_key_path.is_empty() && !creds->ssh_agent_attempted) {
+		if (allowed_types & GIT_CREDENTIAL_SSH_KEY) {
+			creds->ssh_agent_attempted = true;
+			return git_credential_ssh_key_from_agent(out, CString(proper_username).data);
+		}
+	}
+
 	if (allowed_types & GIT_CREDENTIAL_USERPASS_PLAINTEXT) {
 		return git_cred_userpass_plaintext_new(out, CString(proper_username).data, CString(creds->password).data);
 	}

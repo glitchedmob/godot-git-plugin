@@ -14,6 +14,7 @@ struct Credentials {
 	godot::String ssh_public_key_path;
 	godot::String ssh_private_key_path;
 	godot::String ssh_passphrase;
+	bool ssh_agent_attempted = false;
 };
 
 class GitPlugin : public godot::EditorVCSInterface {

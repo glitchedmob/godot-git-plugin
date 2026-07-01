@@ -76,6 +76,7 @@ void GitPlugin::_set_credentials(const godot::String &username, const godot::Str
 	creds.ssh_public_key_path = ssh_public_key_path;
 	creds.ssh_private_key_path = ssh_private_key_path;
 	creds.ssh_passphrase = ssh_passphrase;
+	creds.ssh_agent_attempted = false;
 }
 
 void GitPlugin::_discard_file(const godot::String &file_path) {
@@ -408,6 +409,7 @@ void GitPlugin::_fetch(const godot::String &remote) {
 	remote_cbs.push_transfer_progress = &push_transfer_progress_cb;
 	remote_cbs.push_update_reference = &push_update_reference_cb;
 
+	creds.ssh_agent_attempted = false;
 	GIT2_CALL(git_remote_connect(remote_object.get(), GIT_DIRECTION_FETCH, &remote_cbs, nullptr, nullptr), "Could not connect to remote \"" + remote + "\". Are your credentials correct? Try using a PAT token (in case you are using Github) as your password");
 
 	git_fetch_options opts = GIT_FETCH_OPTIONS_INIT;
@@ -432,6 +434,7 @@ void GitPlugin::_pull(const godot::String &remote) {
 	remote_cbs.push_transfer_progress = &push_transfer_progress_cb;
 	remote_cbs.push_update_reference = &push_update_reference_cb;
 
+	creds.ssh_agent_attempted = false;
 	GIT2_CALL(git_remote_connect(remote_object.get(), GIT_DIRECTION_FETCH, &remote_cbs, nullptr, nullptr), "Could not connect to remote \"" + remote + "\". Are your credentials correct? Try using a PAT token (in case you are using Github) as your password");
 
 	git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;
@@ -529,6 +532,7 @@ void GitPlugin::_push(const godot::String &remote, bool force) {
 	remote_cbs.push_transfer_progress = &push_transfer_progress_cb;
 	remote_cbs.push_update_reference = &push_update_reference_cb;
 
+	creds.ssh_agent_attempted = false;
 	godot::String msg = "Could not connect to remote \"" + remote + "\". Are your credentials correct? Try using a PAT token (in case you are using Github) as your password";
 	GIT2_CALL(git_remote_connect(remote_object.get(), GIT_DIRECTION_PUSH, &remote_cbs, nullptr, nullptr), msg);
 
